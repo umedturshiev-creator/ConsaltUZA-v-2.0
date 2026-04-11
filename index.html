@@ -135,6 +135,15 @@ button {
 </style>
 </head>
 
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#22c55e">
+
+  <script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js");
+}
+</script>
+  
 <body>
 
 <div id="appVersion">v1.1</div>
