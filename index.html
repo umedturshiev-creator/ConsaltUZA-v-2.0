@@ -2,30 +2,79 @@
 <html lang="ru">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0f172a">
+
 <title>UZA App</title>
 
 <style>
 body {margin:0;font-family:Arial;background:#0f172a;color:#fff;}
 .container {padding:15px;}
-input, button {width:100%;padding:12px;border-radius:10px;border:none;margin-top:10px;}
+
+input, button {
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  margin-top:10px;
+}
+
 input {background:#334155;color:white;}
 button {background:#22c55e;color:white;font-weight:bold;}
 
-#appVersion {position:fixed;top:10px;right:15px;font-size:12px;opacity:0.6;}
+.card {
+  background:#1e293b;
+  padding:15px;
+  border-radius:15px;
+  margin-top:10px;
+}
+
+.loader {
+  text-align:center;
+  margin-top:10px;
+  animation:fade 1s infinite alternate;
+}
+
+@keyframes fade {
+  from {opacity:0.4;}
+  to {opacity:1;}
+}
+
+#appVersion {
+  position:fixed;
+  top:10px;
+  right:15px;
+  font-size:12px;
+  opacity:0.6;
+}
 
 #sendingOverlay {
-position:fixed;top:0;left:0;width:100%;height:100%;
-background:rgba(0,0,0,0.8);display:none;
-justify-content:center;align-items:center;z-index:9999;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.8);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
 }
+
 .spinner {
-width:50px;height:50px;border:5px solid #334155;
-border-top:5px solid #22c55e;border-radius:50%;
-animation:spin 1s linear infinite;
+  width:50px;
+  height:50px;
+  border:5px solid #334155;
+  border-top:5px solid #22c55e;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+  margin:auto;
 }
-@keyframes spin {100%{transform:rotate(360deg);}}
+
+@keyframes spin {
+  100% {transform:rotate(360deg);}
+}
 </style>
 </head>
 
@@ -34,44 +83,137 @@ animation:spin 1s linear infinite;
 <div id="appVersion">v1.0</div>
 
 <div class="container">
-<h2>Новая заявка</h2>
+
+<h2>📝 Портал подачи заявки</h2>
 
 <input type="tel" id="inn" placeholder="Введите свой ИНН" maxlength="9">
+
+<div id="searchLoader" class="loader" style="display:none;">
+🔍 Поиск данных...
+</div>
+
+<div id="client"></div>
+
 <input type="tel" id="income" placeholder="Введите свой месячный доход">
-<button onclick="send()">Отправить</button>
+
+<!-- ВЫБОР МЕСЯЦА -->
+<input type="month" id="month">
+
+<button onclick="send()">🚀 Отправить заявку</button>
 
 <div id="status"></div>
+
 </div>
 
+<!-- ОВЕРЛЕЙ -->
 <div id="sendingOverlay">
-<div>
-<div class="spinner"></div>
-<div>Отправка данных...</div>
-</div>
+  <div>
+    <div class="spinner"></div>
+    <div style="text-align:center;margin-top:10px;">Отправка данных...</div>
+  </div>
 </div>
 
 <script>
+
 const API_URL = "https://script.google.com/macros/s/AKfycbwkrFcIdozATvPivGNDbQu_2vKT4L8LRSpPg8EJWm0z2eh7-I9vh_-yfpaTF0y8uV8n/exec";
 
-function send(){
-sendingOverlay.style.display="flex";
+let clientData = null;
 
-fetch(API_URL,{
-method:"POST",
-body:JSON.stringify({
-inn:inn.value,
-income:income.value
-})
-})
-.then(res=>{
-sendingOverlay.style.display="none";
-status.innerHTML = res.ok ? "✅ Успешно" : "❌ Ошибка";
-})
-.catch(()=>{
-sendingOverlay.style.display="none";
-status.innerHTML="❌ Ошибка сети";
+// ===== АВТОПОИСК =====
+document.getElementById("inn").addEventListener("input", function(){
+
+  let inn = this.value;
+
+  if(inn.length === 9){
+    searchAuto(inn);
+  } else {
+    client.innerHTML = "";
+  }
 });
+
+// ===== ПОИСК =====
+function searchAuto(inn){
+
+  searchLoader.style.display = "block";
+  client.innerHTML = "";
+
+  fetch(API_URL + "?inn=" + inn)
+  .then(res=>res.json())
+  .then(data=>{
+
+    searchLoader.style.display = "none";
+
+    if(data.found){
+
+      clientData = data;
+
+      client.innerHTML = `
+        <div class="card">
+        👤 ${data.fio}<br>
+        📍 ${data.address}<br>
+        📞 ${data.phone}
+        </div>`;
+    } else {
+      clientData = null;
+      client.innerHTML = "<div style='color:red'>❌ Клиент не найден</div>";
+    }
+  });
 }
+
+// ===== ОТПРАВКА =====
+function send(){
+
+  if(!clientData){
+    alert("Введите корректный ИНН");
+    return;
+  }
+
+  if(!income.value){
+    alert("Введите доход");
+    return;
+  }
+
+  if(!month.value){
+    alert("Выберите месяц");
+    return;
+  }
+
+  sendingOverlay.style.display = "flex";
+
+  fetch(API_URL,{
+    method:"POST",
+    body:JSON.stringify({
+      inn: inn.value,
+      income: income.value,
+      month: month.value,
+      fio: clientData.fio,
+      address: clientData.address,
+      phone: clientData.phone
+    })
+  })
+  .then(res=>{
+
+    sendingOverlay.style.display = "none";
+
+    if(res.ok){
+      status.innerHTML = "✅ Заявка успешно отправлена";
+
+      inn.value = "";
+      income.value = "";
+      month.value = "";
+      client.innerHTML = "";
+      clientData = null;
+
+    } else {
+      status.innerHTML = "❌ Ошибка отправки";
+    }
+  })
+  .catch(()=>{
+    sendingOverlay.style.display = "none";
+    status.innerHTML = "❌ Ошибка сети";
+  });
+}
+
 </script>
 
 </body>
