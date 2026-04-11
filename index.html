@@ -84,7 +84,7 @@ button {background:#22c55e;color:white;font-weight:bold;}
 
 <div class="container">
 
-<h2>📝 Портал подачи заявки</h2>
+<h2>📝 Новая заявка</h2>
 
 <input type="tel" id="inn" placeholder="Введите свой ИНН" maxlength="9">
 
@@ -96,7 +96,6 @@ button {background:#22c55e;color:white;font-weight:bold;}
 
 <input type="tel" id="income" placeholder="Введите свой месячный доход">
 
-<!-- ВЫБОР МЕСЯЦА -->
 <input type="month" id="month">
 
 <button onclick="send()">🚀 Отправить заявку</button>
@@ -115,7 +114,7 @@ button {background:#22c55e;color:white;font-weight:bold;}
 
 <script>
 
-const API_URL = "https://script.google.com/macros/s/AKfycbwkrFcIdozATvPivGNDbQu_2vKT4L8LRSpPg8EJWm0z2eh7-I9vh_-yfpaTF0y8uV8n/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxRLdcuXx83MZ6um6lPZSaecyGKHg7l3Lh69Ry01mPXbOQWeAihZH5gMsF0LOguYX44/exec";
 
 let clientData = null;
 
@@ -186,9 +185,17 @@ function send(){
       inn: inn.value,
       income: income.value,
       month: month.value,
+
       fio: clientData.fio,
       address: clientData.address,
-      phone: clientData.phone
+      phone: clientData.phone,
+
+      // 👇 СКРЫТЫЕ ДАННЫЕ СОТРУДНИКА
+      employee_fio: clientData.employee_fio,
+      employee_inn: clientData.employee_inn,
+      employee_sin: clientData.employee_sin,
+      employee_salary: clientData.employee_salary,
+      employee_date: clientData.employee_date
     })
   })
   .then(res=>{
