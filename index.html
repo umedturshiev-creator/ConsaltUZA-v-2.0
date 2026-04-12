@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -16,12 +15,15 @@ body {
   color:#fff;
 }
 
-.container {padding:15px;max-width:480px;margin:auto;}
+#appVersion {
+  position:fixed;
+  top:8px;
+  right:12px;
+  font-size:12px;
+  opacity:0.6;
+}
 
-.header {display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;}
-.titleText {font-size:20px;font-weight:600;}
-.subtitle {font-size:12px;opacity:0.6;}
-.headerLogo {width:40px;}
+.container {padding:15px;max-width:480px;margin:auto;}
 
 input, button {
   width:100%;
@@ -42,7 +44,10 @@ button {
   background: linear-gradient(45deg,#22c55e,#16a34a);
   color:white;
   font-weight:bold;
+  opacity:0.5;
 }
+
+button.active {opacity:1;}
 
 .card {
   background:#1e293b;
@@ -57,11 +62,6 @@ button {
   to {opacity:1;}
 }
 
-.loader {
-  text-align:center;
-  margin-top:10px;
-}
-
 .spinner {
   width:40px;
   height:40px;
@@ -72,42 +72,59 @@ button {
   margin:auto;
 }
 
-@keyframes spin {
-  100% {transform:rotate(360deg);}
-}
+@keyframes spin {100%{transform:rotate(360deg);}}
 
-.innStatus {font-size:14px;margin-top:5px;}
-.success {color:#22c55e;}
-.error {color:#ef4444;}
-
-#overlay {
+#overlay, #successPopup, #welcome {
   position:fixed;
   top:0;left:0;width:100%;height:100%;
-  background:rgba(0,0,0,0.8);
   display:none;
   justify-content:center;
   align-items:center;
+  background:rgba(0,0,0,0.8);
+  z-index:9999;
 }
 
+.popupBox {
+  background:#22c55e;
+  padding:20px;
+  border-radius:15px;
+  text-align:center;
+}
+
+.innStatus {margin-top:5px;}
+.success {color:#22c55e;}
+.error {color:#ef4444;}
+
+#pull {
+  text-align:center;
+  opacity:0.5;
+  transform:translateY(-40px);
+}
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<div id="appVersion"></div>
 
-<div class="header">
-  <div>
-    <div class="titleText">Портал подачи заявок</div>
-    <div class="subtitle">Быстро • Удобно • Онлайн</div>
+<!-- Приветствие -->
+<div id="welcome">
+  <div class="popupBox">
+    👋<br><br>
+    Добро пожаловать на портал отправки заявок!
   </div>
-  <img src="icon-192.png" class="headerLogo">
 </div>
 
-<input type="tel" id="inn" placeholder="Введите ИНН" maxlength="9">
-<div id="innStatus" class="innStatus"></div>
+<div class="container">
 
-<div id="searchLoader" class="loader" style="display:none;">
+<div id="pull">⬇ Потяните вниз</div>
+
+<h2>Портал подачи заявок</h2>
+
+<input type="tel" id="inn" placeholder="Введите ИНН" maxlength="9">
+<div id="innStatus"></div>
+
+<div id="loader" style="display:none;text-align:center;">
   <div class="spinner"></div>
   <div>Поиск...</div>
 </div>
@@ -115,63 +132,108 @@ button {
 <div id="client"></div>
 
 <input type="tel" id="income" placeholder="Введите доход">
+
+<label>📅 Выберите месяц</label>
 <input type="month" id="month">
 
-<button onclick="send()">🚀 Отправить</button>
-
-<button id="installBtn" style="display:none;">📲 Установить</button>
+<button id="sendBtn" onclick="send()" disabled>🚀 Отправить</button>
 
 </div>
 
+<!-- Отправка -->
 <div id="overlay">
-  <div class="spinner"></div>
+  <div>
+    <div class="spinner"></div>
+    <div style="text-align:center;margin-top:10px;">Отправка...</div>
+  </div>
 </div>
+
+<!-- Успех -->
+<div id="successPopup">
+  <div class="popupBox">
+    🎉<br><br>Заявка успешно отправлена!
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <script>
+
+// ===== ВЕРСИЯ =====
+const APP_VERSION = "1.2";
+appVersion.innerText = "v" + APP_VERSION;
+console.log("🚀 UZA App version:", APP_VERSION);
+
+// ===== API =====
 const API_URL = "https://script.google.com/macros/s/AKfycbwUQ3EPlYjs2jqoEG4e4dDnXhb5AEbd5dLh9f_cWYsBVV8OFZMtn-kKn-KweiH3UfM1/exec";
 
-let clientData = null;
+let clientData=null;
 
+// ===== Приветствие =====
+window.onload = ()=>{
+  welcome.style.display="flex";
+  setTimeout(()=>welcome.style.display="none",2000);
+}
+
+// ===== Месяц по умолчанию =====
+document.addEventListener("DOMContentLoaded",()=>{
+  const now=new Date();
+  const prev=new Date(now.getFullYear(),now.getMonth()-1,1);
+  month.value = prev.getFullYear()+"-"+String(prev.getMonth()+1).padStart(2,'0');
+});
+
+// ===== Поиск =====
 inn.addEventListener("input",()=>{
   inn.value = inn.value.replace(/\D/g,'');
+
   if(inn.value.length===9){
-    searchAuto(inn.value);
+    loader.style.display="block";
+
+    fetch(API_URL+"?inn="+inn.value)
+    .then(r=>r.json())
+    .then(data=>{
+      loader.style.display="none";
+
+      if(data.found){
+        clientData=data;
+        innStatus.innerHTML="✅ Найден клиент";
+        innStatus.className="success";
+
+        client.innerHTML=`
+        <div class="card">
+          <b>${data.fio}</b><br>
+          ${data.address}<br>
+          📞 ${data.phone}
+        </div>`;
+      } else {
+        clientData=null;
+        innStatus.innerHTML="❌ Не найдено";
+        innStatus.className="error";
+        client.innerHTML="";
+      }
+
+      checkButton();
+    });
   }
 });
 
-function searchAuto(val){
-  searchLoader.style.display="block";
-  client.innerHTML="";
-  innStatus.innerHTML="";
-
-  fetch(API_URL+"?inn="+val)
-  .then(r=>r.json())
-  .then(data=>{
-    searchLoader.style.display="none";
-
-    if(data.found){
-      clientData=data;
-      innStatus.innerHTML="✅ Найден клиент";
-      innStatus.className="innStatus success";
-
-      client.innerHTML=`
-      <div class="card">
-        <b>${data.fio}</b><br>
-        ${data.address}<br>
-        📞 ${data.phone}
-      </div>`;
-
-    } else {
-      innStatus.innerHTML="❌ Не найдено";
-      innStatus.className="innStatus error";
-      clientData=null;
-    }
-  });
+// ===== Проверка кнопки =====
+function checkButton(){
+  if(clientData && income.value && month.value){
+    sendBtn.classList.add("active");
+    sendBtn.disabled=false;
+  } else {
+    sendBtn.classList.remove("active");
+    sendBtn.disabled=true;
+  }
 }
 
+income.addEventListener("input",checkButton);
+month.addEventListener("change",checkButton);
+
+// ===== Отправка =====
 function send(){
-  if(!clientData){alert("Введите ИНН");return;}
-  if(!income.value){alert("Введите доход");return;}
+  if(!clientData) return;
 
   overlay.style.display="flex";
 
@@ -185,32 +247,41 @@ function send(){
   })
   .then(()=>{
     overlay.style.display="none";
-    alert("Успешно отправлено");
+
+    successPopup.style.display="flex";
+    confetti({particleCount:120,spread:70});
+
+    setTimeout(()=>successPopup.style.display="none",2500);
+
     inn.value="";
     income.value="";
     client.innerHTML="";
     clientData=null;
+
+    checkButton();
   });
 }
 
-// PWA
+// ===== Pull to refresh =====
+let startY=0;
+
+document.addEventListener("touchstart",e=>{
+  startY=e.touches[0].clientY;
+});
+
+document.addEventListener("touchend",e=>{
+  let endY=e.changedTouches[0].clientY;
+
+  if(endY-startY>100){
+    location.reload();
+  }
+});
+
+// ===== PWA =====
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js");
 }
 
-let deferredPrompt;
-
-window.addEventListener("beforeinstallprompt", (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  installBtn.style.display = "block";
-});
-
-installBtn.addEventListener("click", async () => {
-  deferredPrompt.prompt();
-  await deferredPrompt.userChoice;
-  deferredPrompt = null;
-});
 </script>
 
 </body>
