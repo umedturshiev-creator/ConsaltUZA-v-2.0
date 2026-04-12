@@ -1,7 +1,7 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>UZA App</title>
 
@@ -12,14 +12,16 @@
 body {
   margin:0;
   font-family:Arial;
-  background: linear-gradient(135deg, #0f172a, #1e3a8a);
+  background: linear-gradient(135deg,#0f172a,#1e3a8a);
   color:#fff;
 }
+
 .container {padding:15px;max-width:480px;margin:auto;}
+
 .header {display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;}
 .titleText {font-size:20px;font-weight:600;}
 .subtitle {font-size:12px;opacity:0.6;}
-.headerLogo {width:40px;height:40px;}
+.headerLogo {width:40px;}
 
 input, button {
   width:100%;
@@ -47,11 +49,46 @@ button {
   padding:15px;
   border-radius:15px;
   margin-top:10px;
+  animation:fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {opacity:0; transform:translateY(10px);}
+  to {opacity:1;}
+}
+
+.loader {
+  text-align:center;
+  margin-top:10px;
+}
+
+.spinner {
+  width:40px;
+  height:40px;
+  border:4px solid #334155;
+  border-top:4px solid #22c55e;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+  margin:auto;
+}
+
+@keyframes spin {
+  100% {transform:rotate(360deg);}
 }
 
 .innStatus {font-size:14px;margin-top:5px;}
 .success {color:#22c55e;}
 .error {color:#ef4444;}
+
+#overlay {
+  position:fixed;
+  top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.8);
+  display:none;
+  justify-content:center;
+  align-items:center;
+}
+
 </style>
 </head>
 
@@ -70,6 +107,11 @@ button {
 <input type="tel" id="inn" placeholder="Введите ИНН" maxlength="9">
 <div id="innStatus" class="innStatus"></div>
 
+<div id="searchLoader" class="loader" style="display:none;">
+  <div class="spinner"></div>
+  <div>Поиск...</div>
+</div>
+
 <div id="client"></div>
 
 <input type="tel" id="income" placeholder="Введите доход">
@@ -77,33 +119,51 @@ button {
 
 <button onclick="send()">🚀 Отправить</button>
 
-<button id="installBtn" style="display:none;">📲 Установить приложение</button>
+<button id="installBtn" style="display:none;">📲 Установить</button>
 
+</div>
+
+<div id="overlay">
+  <div class="spinner"></div>
 </div>
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbwUQ3EPlYjs2jqoEG4e4dDnXhb5AEbd5dLh9f_cWYsBVV8OFZMtn-kKn-KweiH3UfM1/exec";
+
 let clientData = null;
 
 inn.addEventListener("input",()=>{
   inn.value = inn.value.replace(/\D/g,'');
-  if(inn.value.length===9) searchAuto(inn.value);
+  if(inn.value.length===9){
+    searchAuto(inn.value);
+  }
 });
 
 function searchAuto(val){
+  searchLoader.style.display="block";
+  client.innerHTML="";
+  innStatus.innerHTML="";
+
   fetch(API_URL+"?inn="+val)
   .then(r=>r.json())
   .then(data=>{
+    searchLoader.style.display="none";
+
     if(data.found){
       clientData=data;
       innStatus.innerHTML="✅ Найден клиент";
       innStatus.className="innStatus success";
 
-      client.innerHTML=`<div class="card">${data.fio}<br>${data.address}<br>${data.phone}</div>`;
+      client.innerHTML=`
+      <div class="card">
+        <b>${data.fio}</b><br>
+        ${data.address}<br>
+        📞 ${data.phone}
+      </div>`;
+
     } else {
       innStatus.innerHTML="❌ Не найдено";
       innStatus.className="innStatus error";
-      client.innerHTML="";
       clientData=null;
     }
   });
@@ -112,6 +172,8 @@ function searchAuto(val){
 function send(){
   if(!clientData){alert("Введите ИНН");return;}
   if(!income.value){alert("Введите доход");return;}
+
+  overlay.style.display="flex";
 
   fetch(API_URL,{
     method:"POST",
@@ -122,6 +184,7 @@ function send(){
     })
   })
   .then(()=>{
+    overlay.style.display="none";
     alert("Успешно отправлено");
     inn.value="";
     income.value="";
