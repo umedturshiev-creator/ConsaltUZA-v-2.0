@@ -1,10 +1,11 @@
 {
-  "name": "UZA App",
+  "name": "UZA Портал",
   "short_name": "UZA",
-  "start_url": "./index.html",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#22c55e",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "icon-192.png",
