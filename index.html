@@ -272,7 +272,6 @@ const translations = {
 let clientData = null;
 let currentLang = localStorage.getItem("lang") || "ru";
 
-/* helpers */
 function getEmployeeFio(data) {
   return data.employeeFio ||
          data.employee_fio ||
@@ -296,7 +295,6 @@ function escapeHtml(value) {
     .replace(/'/g, "&#039;");
 }
 
-/* язык */
 function setLang(l) {
   currentLang = l;
   const t = translations[l];
@@ -324,7 +322,31 @@ document.querySelectorAll(".langBtn").forEach(btn => {
   };
 });
 
-/* поиск по ИНН */
+/* splash */
+window.onload = () => {
+  setTimeout(() => {
+    splashScreen.style.display = "none";
+  }, 1500);
+};
+
+/* предыдущий месяц */
+const now = new Date();
+const prev = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+const year = prev.getFullYear();
+const monthNum = String(prev.getMonth() + 1).padStart(2, "0");
+month.value = `${year}-${monthNum}`;
+
+/* validate */
+function validate() {
+  submitBtn.disabled = !(inn.value.length === 9 && income.value && month.value && clientData);
+}
+
+/* только цифры */
+income.oninput = () => {
+  income.value = income.value.replace(/\D/g, "");
+  validate();
+};
+
 inn.oninput = () => {
   inn.value = inn.value.replace(/\D/g, "").slice(0, 9);
 
@@ -391,7 +413,7 @@ inn.oninput = () => {
       });
   }
 };
-
+  
 /* прогресс отправки */
 function startProgress() {
   let p = 0;
