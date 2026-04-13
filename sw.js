@@ -1,9 +1,17 @@
-const CACHE_NAME = "uza-app-v1";
+const CACHE_NAME = "uza-app-v2";
 
 self.addEventListener("install", e => {
   e.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(["./", "./index.html"]))
+    caches.open(CACHE_NAME).then(cache =>
+      cache.addAll([
+        "./",
+        "./index.html",
+        "./manifest.json",
+        "./icon-192.png",
+        "./icon-512.png",
+        "./logo.png"
+      ])
+    )
   );
 });
 
