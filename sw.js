@@ -1,4 +1,4 @@
-const CACHE_NAME = "uza-app-v2";
+const CACHE_NAME = "uza-app-v4";
 
 self.addEventListener("install", e => {
   e.waitUntil(
