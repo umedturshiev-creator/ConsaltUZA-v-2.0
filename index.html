@@ -270,10 +270,12 @@ const translations = {
 };
 
 let clientData = null;
+let currentLang = localStorage.getItem("lang") || "ru";
 
 /* helpers */
 function getEmployeeFio(data) {
   return data.employeeFio ||
+         data.employee_fio ||
          data.employee ||
          data.sotrudnik ||
          data.fio_sotrudnika ||
@@ -296,7 +298,9 @@ function escapeHtml(value) {
 
 /* язык */
 function setLang(l) {
+  currentLang = l;
   const t = translations[l];
+
   title.innerText = t.title;
   inn.placeholder = t.inn;
   income.placeholder = t.income;
@@ -304,45 +308,21 @@ function setLang(l) {
   submitBtn.innerText = t.send;
   splashTitle.innerText = t.splash;
   splashSub.innerText = t.sub;
+
   localStorage.setItem("lang", l);
 }
 
-const lang = localStorage.getItem("lang") || "ru";
-setLang(lang);
+setLang(currentLang);
 
 document.querySelectorAll(".langBtn").forEach(btn => {
-  if (btn.dataset.lang === lang) btn.classList.add("active");
+  if (btn.dataset.lang === currentLang) btn.classList.add("active");
+
   btn.onclick = () => {
     document.querySelectorAll(".langBtn").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
     setLang(btn.dataset.lang);
   };
 });
-
-/* splash */
-window.onload = () => {
-  setTimeout(() => {
-    splashScreen.style.display = "none";
-  }, 1500);
-};
-
-/* предыдущий месяц */
-const now = new Date();
-const prev = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-const year = prev.getFullYear();
-const monthNum = String(prev.getMonth() + 1).padStart(2, "0");
-month.value = `${year}-${monthNum}`;
-
-/* validate */
-function validate() {
-  submitBtn.disabled = !(inn.value.length === 9 && income.value && month.value && clientData);
-}
-
-/* только цифры */
-income.oninput = () => {
-  income.value = income.value.replace(/\D/g, "");
-  validate();
-};
 
 /* поиск по ИНН */
 inn.oninput = () => {
@@ -360,6 +340,7 @@ inn.oninput = () => {
       .then(r => r.json())
       .then(d => {
         searchStatus.innerHTML = "";
+        const t = translations[currentLang];
 
         if (d && d.found) {
           const employeeFio = getEmployeeFio(d);
@@ -371,7 +352,7 @@ inn.oninput = () => {
 
           searchStatus.innerHTML = `
             <div style="color:#22c55e;font-weight:bold;">
-              ✅ ИНН найден
+              ${t.innFound}
             </div>
           `;
 
@@ -380,14 +361,14 @@ inn.oninput = () => {
               👤 <b>${escapeHtml(d.fio || "")}</b><br>
               📍 ${escapeHtml(d.address || "—")}<br>
               📞 ${escapeHtml(d.phone || "—")}
-              ${employeeFio ? `<br>🧑‍💼 Сотрудник: <b>${escapeHtml(employeeFio)}</b>` : ""}
+              ${employeeFio ? `<br>${t.employeeLabel} <b>${escapeHtml(employeeFio)}</b>` : ""}
             </div>
           `;
         } else {
           clientData = null;
           searchStatus.innerHTML = `
             <div style="color:#ef4444;font-weight:bold;">
-              ❌ ИНН не найден
+              ${t.innNotFound}
             </div>
           `;
           client.innerHTML = "";
@@ -397,10 +378,12 @@ inn.oninput = () => {
       })
       .catch(error => {
         console.log("GET error:", error);
+        const t = translations[currentLang];
+
         clientData = null;
         searchStatus.innerHTML = `
           <div style="color:#ef4444;font-weight:bold;">
-            ❌ Ошибка поиска
+            ${t.searchError}
           </div>
         `;
         client.innerHTML = "";
