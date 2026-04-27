@@ -691,16 +691,25 @@ function setText(id, text) {
 }
 
 function checkProgramUpdate() {
-  fetch(API_URL + "?action=version&t=" + Date.now())
+  fetch(API_URL + "?action=version&t=" + Date.now(), {
+    cache: "no-store"
+  })
     .then(r => r.json())
     .then(d => {
       if (!d.version) return;
 
       if (d.version !== APP_VERSION) {
-        showUpdateBanner(d.version);
+        forceUpdateProgram(d.version);
       }
     })
     .catch(() => {});
+}
+
+function forceUpdateProgram(newVersion) {
+  localStorage.setItem("lastKnownVersion", newVersion);
+
+  const baseUrl = window.location.origin + window.location.pathname;
+  window.location.replace(baseUrl + "?v=" + Date.now());
 }
 
 function showUpdateBanner(newVersion) {
@@ -867,7 +876,10 @@ function initApp() {
     $("splashScreen").style.display = "none";
   }, 1200);
 }
-
+  checkProgramUpdate();
+  setInterval(checkProgramUpdate, 30000);
+}
+  
 window.addEventListener("load", initApp);
 
 setTimeout(() => {
