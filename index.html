@@ -1123,27 +1123,37 @@ function getStatusClass(status) {
   if (st === "отменен" || st === "отменён" || st === "бекор шуд") return "status-cancel";
   return "";
 }
+  
 function updateDashboard(items) {
-  let todayCount = 0, done = 0, total = items.length, unresolved = 0, cancelled = 0; let newCount = 0;
+  let todayCount = 0;
+  let done = 0;
+  let total = items.length;
+  let unresolved = 0;
+  let cancelled = 0;
+  let newCount = 0;
+
   items.forEach(item => {
     const status = String(item.status || "").toLowerCase().trim();
 
-if (status === "новый") {
-  newCount++;
-}
-    
+    if (status === "новый") newCount++;
+
     if (isTodayItem(item)) todayCount++;
-    sum += Number(String(item.income || "0").replace(/\D/g, "")) || 0;
-    if (isDoneStatus(item.status)) done++;
-    else if (isCancelledStatus(item.status)) cancelled++;
-    else unresolved++;
+
+    if (isDoneStatus(item.status)) {
+      done++;
+    } else if (isCancelledStatus(item.status)) {
+      cancelled++;
+    } else {
+      unresolved++;
+    }
   });
-  setText("dashToday", todayCount);
-  setText("dashDone", done);
-  setText("dashTotal", total);
-  setText("dashUnresolved", unresolved);
-  setText("dashCancelled", cancelled);
-  $("dashNew").innerText = newCount;
+
+  if ($("dashToday")) $("dashToday").innerText = todayCount;
+  if ($("dashDone")) $("dashDone").innerText = done;
+  if ($("dashTotal")) $("dashTotal").innerText = total;
+  if ($("dashUnresolved")) $("dashUnresolved").innerText = unresolved;
+  if ($("dashCancelled")) $("dashCancelled").innerText = cancelled;
+  if ($("dashNew")) $("dashNew").innerText = newCount;
 }
 
 function renderApplications(items) {
