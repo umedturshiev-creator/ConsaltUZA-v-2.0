@@ -205,27 +205,9 @@ button:disabled {
 
 .dashboardGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
   margin-top: 10px;
-}
-
-.dashboardGrid .card {
-  padding: 10px 8px;
-  border-radius: 12px;
-  text-align: center;
-}
-
-.dashboardGrid b {
-  font-size: 12px;
-  color: #94a3b8;
-}
-
-.dashboardGrid span {
-  display: block;
-  margin-top: 4px;
-  font-size: 18px;
-  font-weight: 700;
 }
 
 .dashboardGrid .card {
@@ -236,7 +218,7 @@ button:disabled {
 .dashboardGrid span {
   display: inline-block;
   margin-top: 8px;
-  font-size: 18px;
+  font-size: 22px;
   font-weight: bold;
 }
 
@@ -399,64 +381,38 @@ button:disabled {
   .appDetails { grid-template-columns: 1fr; }
 }
 
+
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(95px, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+.dashboardGrid .card {
+  text-align: center;
+  margin-top: 0;
+  padding: 10px 8px;
+  border-radius: 12px;
+  background: rgba(30,41,59,0.7);
+}
+.dashboardGrid b { font-size: 12px; color: #94a3b8; }
+.dashboardGrid span { display:block; margin-top:4px; font-size:18px; font-weight:700; }
+.dashCard { cursor:pointer; transition:0.2s; }
+.dashCard:hover { transform:translateY(-2px); background:#334155; }
+.dashCard.active { border:1px solid #22c55e; box-shadow:0 0 15px rgba(34,197,94,0.25); }
+.statusBadge { padding:6px 10px; border-radius:999px; font-size:12px; font-weight:700; display:inline-block; }
+.status-new { background:rgba(148,163,184,0.2); color:#cbd5f5; border:1px solid rgba(148,163,184,0.4); }
+.status-process { background:rgba(250,204,21,0.15); color:#fde047; border:1px solid rgba(250,204,21,0.4); }
+.status-done { background:rgba(34,197,94,0.15); color:#bbf7d0; border:1px solid rgba(34,197,94,0.4); }
+.status-cancel { background:rgba(239,68,68,0.15); color:#fecaca; border:1px solid rgba(239,68,68,0.4); }
+#updateBanner { position:fixed; left:12px; right:12px; bottom:12px; z-index:10000; background:#22c55e; color:#fff; padding:12px 14px; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.35); font-weight:700; text-align:center; }
+
 @media print {
   body { background: #fff; color: #000; }
   #topLoginBtn, #loginScreen, .langSwitch, .progressBox, .header, #inn, #income, #monthLabel, #month, #submitBtn, #refreshBtn, #logoutBtn, #applicationSearch, #exportExcelBtn, #exportPdfBtn, #toggleFormIcon, select, #sendingOverlay, #splashScreen { display:none !important; }
   #adminPanel { display:block !important; }
   .card { background:#fff; color:#000; border:1px solid #ccc; box-shadow:none; }
 }
-
-.statusBadge {
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 700;
-  display: inline-block;
-}
-
-/* Новый */
-.status-new {
-  background: rgba(148,163,184,0.2);
-  color: #cbd5f5;
-  border: 1px solid rgba(148,163,184,0.4);
-}
-
-/* В процессе */
-.status-process {
-  background: rgba(250,204,21,0.15);
-  color: #fde047;
-  border: 1px solid rgba(250,204,21,0.4);
-}
-
-/* Решен */
-.status-done {
-  background: rgba(34,197,94,0.15);
-  color: #bbf7d0;
-  border: 1px solid rgba(34,197,94,0.4);
-}
-
-/* Отменен */
-.status-cancel {
-  background: rgba(239,68,68,0.15);
-  color: #fecaca;
-  border: 1px solid rgba(239,68,68,0.4);
-}
-
-.dashCard {
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.dashCard:hover {
-  transform: translateY(-2px);
-  background: #334155;
-}
-
-.dashCard.active {
-  border: 1px solid #22c55e;
-  box-shadow: 0 0 15px rgba(34,197,94,0.25);
-}
-  
 </style>
 </head>
 
@@ -497,7 +453,7 @@ button:disabled {
   <div class="header">
     <div>
       <span id="title">📝 Портал подачи заявок</span><br>
-      <small id="appVersion" style="color:#94a3b8;font-size:12px;">v1.3.0</small>
+      <small id="appVersion" style="color:#94a3b8;font-size:12px;">v1.4.0</small>
     </div>
     <img src="logo.png" class="logo">
   </div>
@@ -523,29 +479,12 @@ button:disabled {
     <h3 id="applicationsTitle">📋 Список заявок</h3>
 
     <div id="adminDashboard" class="dashboardGrid">
-<div class="card dashCard" onclick="setDashboardFilter('today')">
-  <b id="dashTodayLabel">Сегодня</b><br><span id="dashToday">0</span>
-</div>
-
-<div class="card dashCard" onclick="setDashboardFilter('all')">
-  <b id="dashTotalLabel">Всего</b><br><span id="dashTotal">0</span>
-</div>
-
-<div class="card dashCard" onclick="setDashboardFilter('done')">
-  <b id="dashDoneLabel">Решено</b><br><span id="dashDone">0</span>
-</div>
-
-<div class="card dashCard" onclick="setDashboardFilter('unresolved')">
-  <b id="dashUnresolvedLabel">Нерешенные</b><br><span id="dashUnresolved">0</span>
-</div>
-
-<div class="card dashCard" onclick="setDashboardFilter('cancelled')">
-  <b id="dashCancelledLabel">Отмененные</b><br><span id="dashCancelled">0</span>
-</div>
-
-<div class="card dashCard" onclick="setDashboardFilter('all')">
-  <b id="dashSumLabel">Сумма</b><br><span id="dashSum">0</span>
-</div>
+      <div class="card dashCard" onclick="setDashboardFilter('today')"><b id="dashTodayLabel">Сегодня</b><br><span id="dashToday">0</span></div>
+      <div class="card dashCard" onclick="setDashboardFilter('all')"><b id="dashTotalLabel">Всего</b><br><span id="dashTotal">0</span></div>
+      <div class="card dashCard" onclick="setDashboardFilter('done')"><b id="dashDoneLabel">Решено</b><br><span id="dashDone">0</span></div>
+      <div class="card dashCard" onclick="setDashboardFilter('unresolved')"><b id="dashUnresolvedLabel">Нерешенные</b><br><span id="dashUnresolved">0</span></div>
+      <div class="card dashCard" onclick="setDashboardFilter('cancelled')"><b id="dashCancelledLabel">Отмененные</b><br><span id="dashCancelled">0</span></div>
+      <div class="card dashCard" onclick="setDashboardFilter('all')"><b id="dashSumLabel">Сумма</b><br><span id="dashSum">0</span></div>
     </div>
 
     <input id="applicationSearch" placeholder="Поиск по ИНН / ФИО" oninput="filterApplications()">
@@ -569,8 +508,8 @@ button:disabled {
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwacF7dzr78zJzQDOp0cnn_qjPwvQhHonGYCbbjgjaR7JVgzfDeMoHy4tnp4QkvH5C-/exec";
-const APP_VERSION = "1.3.2";
+const API_URL = "https://script.google.com/macros/s/AKfycbyQATH-JDnc90VLtdJdtvK_xDUOpxrpAuUBiFcbGxtJfNCGx7sSdIiOhLcJYkKnR1zcxg/exec";
+const APP_VERSION = "1.4.0";
 
 const translations = {
   ru: {
@@ -608,6 +547,7 @@ const translations = {
     toggleForm: "📝 Показать / скрыть форму заявки",
     dashboardTotal: "Всего",
     dashboardUnresolved: "Нерешенные",
+    dashboardCancelled: "Отмененные",
     date: "Дата",
     fio: "ФИО",
     address: "Адрес",
@@ -621,8 +561,7 @@ const translations = {
     status_new: "Новый",
     status_process: "В процессе",
     status_done: "Решен",
-    status_cancel: "Отменен",
-    dashboardCancelled: "Отмененные",
+    status_cancel: "Отменен"
   },
   tj: {
     title: "📝 Портали дархостҳо",
@@ -659,6 +598,7 @@ const translations = {
     toggleForm: "📝 Нишон / пинҳон кардани шакли дархост",
     dashboardTotal: "Ҳамагӣ",
     dashboardUnresolved: "Ҳалнашуда",
+    dashboardCancelled: "Бекоршуда",
     date: "Сана",
     fio: "Ному насаб",
     address: "Суроға",
@@ -672,8 +612,7 @@ const translations = {
     status_new: "Нав",
     status_process: "Дар раванди кор",
     status_done: "Ҳал шуд",
-    status_cancel: "Бекор шуд",
-    dashboardCancelled: "Бекоршуда",
+    status_cancel: "Бекор шуд"
   }
 };
 
@@ -690,115 +629,9 @@ function setText(id, text) {
   if (el) el.innerText = text;
 }
 
-function checkProgramUpdate() {
-  fetch(API_URL + "?action=version&t=" + Date.now(), {
-    cache: "no-store"
-  })
-    .then(r => r.json())
-    .then(d => {
-      if (!d.version) return;
-
-      if (d.version !== APP_VERSION) {
-        forceUpdateProgram(d.version);
-      }
-    })
-    .catch(() => {});
-}
-
-function forceUpdateProgram(newVersion) {
-  const currentUrl = new URL(window.location.href);
-
-  // защита от бесконечной перезагрузки
-  if (sessionStorage.getItem("updateTried") === newVersion) {
-    return;
-  }
-
-  sessionStorage.setItem("updateTried", newVersion);
-  currentUrl.searchParams.set("v", Date.now());
-
-  window.location.replace(currentUrl.toString());
-}
-
-function showUpdateBanner(newVersion) {
-  if (document.getElementById("updateBanner")) return;
-
-  const banner = document.createElement("div");
-  banner.id = "updateBanner";
-  banner.innerHTML = `
-    🔄 Доступна новая версия ${newVersion}
-    <button onclick="forceUpdateProgram()">Обновить</button>
-  `;
-
-  banner.style.position = "fixed";
-  banner.style.bottom = "15px";
-  banner.style.left = "15px";
-  banner.style.right = "15px";
-  banner.style.background = "#22c55e";
-  banner.style.color = "white";
-  banner.style.padding = "14px";
-  banner.style.borderRadius = "14px";
-  banner.style.zIndex = "10000";
-  banner.style.textAlign = "center";
-  banner.style.fontWeight = "bold";
-  banner.style.boxShadow = "0 10px 30px rgba(0,0,0,0.3)";
-
-  document.body.appendChild(banner);
-}
-
-function forceUpdateProgram() {
-  window.location.href = window.location.pathname + "?v=" + Date.now();
-}
-
 function setPlaceholder(id, text) {
   const el = $(id);
   if (el) el.placeholder = text;
-}
-
-function normalizeStatus(status) {
-  return String(status || "").toLowerCase().trim();
-}
-
-function isDoneStatus(status) {
-  const s = normalizeStatus(status);
-  return s === "решен" || s === "решён" || s === "ҳал шуд";
-}
-
-function isCancelledStatus(status) {
-  const s = normalizeStatus(status);
-  return s === "отменен" || s === "отменён" || s === "бекор шуд";
-}
-
-function isUnresolvedStatus(status) {
-  return !isDoneStatus(status) && !isCancelledStatus(status);
-}
-
-function isTodayItem(item) {
-  const today = new Date().toLocaleDateString();
-  return String(item.date || "").includes(today);
-}
-
-function setDashboardFilter(filter) {
-  dashboardFilter = filter;
-
-  document.querySelectorAll(".dashCard").forEach(card => {
-    card.classList.remove("active");
-  });
-
-  const activeMap = {
-    today: "dashTodayLabel",
-    all: "dashTotalLabel",
-    done: "dashDoneLabel",
-    unresolved: "dashUnresolvedLabel",
-    cancelled: "dashCancelledLabel"
-  };
-
-  const labelId = activeMap[filter];
-  if (labelId) {
-    const label = document.getElementById(labelId);
-    if (label) label.closest(".dashCard").classList.add("active");
-  }
-
-  filterApplications();
 }
 
 function setLang(lang) {
@@ -831,18 +664,6 @@ function setLang(lang) {
   localStorage.setItem("lang", lang);
 }
 
-function translateStatus(status) {
-  const x = tr();
-  const s = String(status || "").toLowerCase().trim();
-
-  if (s === "новый") return x.status_new;
-  if (s === "в процессе") return x.status_process;
-  if (s === "решен" || s === "решён") return x.status_done;
-  if (s === "отменен") return x.status_cancel;
-
-  return status; // fallback
-}
-  
 function escapeHtml(value) {
   if (value === null || value === undefined) return "";
   return String(value)
@@ -882,11 +703,11 @@ function initApp() {
   setTimeout(() => {
     $("splashScreen").style.display = "none";
   }, 1200);
-}
+
   checkProgramUpdate();
   setInterval(checkProgramUpdate, 30000);
 }
-  
+
 window.addEventListener("load", initApp);
 
 setTimeout(() => {
@@ -1082,56 +903,43 @@ function logout() {
   if ($("requestFormBlock")) $("requestFormBlock").style.display = "block";
   $("applicationsList").innerHTML = "";
   allApplications = [];
+  dashboardFilter = "all";
 }
 
 function loadApplications() {
   const token = localStorage.getItem("authToken");
   const x = tr();
-
   $("applicationsList").innerHTML = '<div class="searchSpinner"></div>';
 
-  fetch(API_URL + "?action=list&token=" + encodeURIComponent(token || ""))
+  fetch(API_URL + "?action=list&token=" + encodeURIComponent(token || ""), { cache: "no-store" })
     .then(r => r.text())
     .then(text => {
       let d;
-
       try {
         d = JSON.parse(text);
       } catch (e) {
-        $("applicationsList").innerHTML =
-          `<div style="color:#ef4444;font-weight:bold;">
-            Ошибка ответа сервера:<br>${escapeHtml(text)}
-          </div>`;
+        $("applicationsList").innerHTML = `<div style="color:#ef4444;font-weight:bold;">${escapeHtml(x.loadError)}<br>${escapeHtml(text.slice(0, 200))}</div>`;
         return;
       }
 
       if (d.success === false) {
-        $("applicationsList").innerHTML =
-          `<div style="color:#ef4444;font-weight:bold;">
-            ${escapeHtml(d.error || x.noAccess)}
-          </div>`;
+        $("applicationsList").innerHTML = `<div style="color:#ef4444;font-weight:bold;">${escapeHtml(d.error || x.noAccess)}</div>`;
         return;
       }
 
       if (!d.items) {
-        $("applicationsList").innerHTML =
-          `<div style="color:#ef4444;font-weight:bold;">
-            ${escapeHtml(x.loadError)}
-          </div>`;
+        $("applicationsList").innerHTML = `<div style="color:#ef4444;font-weight:bold;">${escapeHtml(x.loadError)}</div>`;
         return;
       }
 
       allApplications = d.items || [];
-
       const filtered = getCurrentFilteredApplications();
       updateDashboard(filtered);
       renderApplications(filtered);
+      markActiveDashboardCard();
     })
     .catch(error => {
-      $("applicationsList").innerHTML =
-        `<div style="color:#ef4444;font-weight:bold;">
-          ${escapeHtml(x.loadError)}<br>${escapeHtml(error.message)}
-        </div>`;
+      $("applicationsList").innerHTML = `<div style="color:#ef4444;font-weight:bold;">${escapeHtml(x.loadError)}<br>${escapeHtml(error.message || "")}</div>`;
     });
 }
 
@@ -1144,14 +952,10 @@ function getCurrentFilteredApplications() {
   const tokens = getSearchTokens();
 
   return allApplications.filter(item => {
-    const combined = [item.inn, item.fio]
-      .map(v => String(v || "").toLowerCase())
-      .join(" ");
-
+    const combined = [item.inn, item.fio].map(v => String(v || "").toLowerCase()).join(" ");
     const searchOk = !tokens.length || tokens.every(token => combined.includes(token));
 
     let dashboardOk = true;
-
     if (dashboardFilter === "today") dashboardOk = isTodayItem(item);
     if (dashboardFilter === "done") dashboardOk = isDoneStatus(item.status);
     if (dashboardFilter === "unresolved") dashboardOk = isUnresolvedStatus(item.status);
@@ -1186,48 +990,51 @@ function highlightMatch(value) {
   return safe;
 }
 
-function updateDashboard(items) {
-  let todayCount = 0;
-  let sum = 0;
-  let done = 0;
-  let total = items.length;
-  let unresolved = 0;
-  let cancelled = 0;
-
-  const today = new Date().toLocaleDateString();
-
-  items.forEach(item => {
-    const itemDate = String(item.date || "");
-
-    if (itemDate.includes(today)) {
-      todayCount++;
-    }
-
-    sum += Number(String(item.income || "0").replace(/\D/g, "")) || 0;
-
-    const status = String(item.status || "").toLowerCase().trim();
-
-    if (status === "решен" || status === "решён" || status === "ҳал шуд") {
-      done++;
-    } else if (status === "отменен" || status === "бекор шуд") {
-      cancelled++;
-    } else {
-      unresolved++;
-    }
-  });
-
-  $("dashToday").innerText = todayCount;
-  $("dashSum").innerText = sum;
-  $("dashDone").innerText = done;
-  $("dashTotal").innerText = total;
-  $("dashUnresolved").innerText = unresolved;
-
-  // 👇 новый блок (если добавишь в HTML)
-  if ($("dashCancelled")) {
-    $("dashCancelled").innerText = cancelled;
-  }
+function normalizeStatus(status) { return String(status || "").toLowerCase().trim(); }
+function isDoneStatus(status) { const st = normalizeStatus(status); return st === "решен" || st === "решён" || st === "ҳал шуд"; }
+function isCancelledStatus(status) { const st = normalizeStatus(status); return st === "отменен" || st === "отменён" || st === "бекор шуд"; }
+function isUnresolvedStatus(status) { return !isDoneStatus(status) && !isCancelledStatus(status); }
+function isTodayItem(item) { const today = new Date().toLocaleDateString(); return String(item.date || "").includes(today); }
+function setDashboardFilter(filter) { dashboardFilter = filter; filterApplications(); markActiveDashboardCard(); }
+function markActiveDashboardCard() {
+  document.querySelectorAll(".dashCard").forEach(card => card.classList.remove("active"));
+  const activeMap = { today:"dashTodayLabel", all:"dashTotalLabel", done:"dashDoneLabel", unresolved:"dashUnresolvedLabel", cancelled:"dashCancelledLabel" };
+  const label = document.getElementById(activeMap[dashboardFilter]);
+  if (label && label.closest(".dashCard")) label.closest(".dashCard").classList.add("active");
 }
-  
+function translateStatus(status) {
+  const x = tr(); const st = normalizeStatus(status);
+  if (st === "новый") return x.status_new;
+  if (st === "в процессе") return x.status_process;
+  if (st === "решен" || st === "решён" || st === "ҳал шуд") return x.status_done;
+  if (st === "отменен" || st === "отменён" || st === "бекор шуд") return x.status_cancel;
+  return status || "-";
+}
+function getStatusClass(status) {
+  const st = normalizeStatus(status);
+  if (st === "новый") return "status-new";
+  if (st === "в процессе") return "status-process";
+  if (st === "решен" || st === "решён" || st === "ҳал шуд") return "status-done";
+  if (st === "отменен" || st === "отменён" || st === "бекор шуд") return "status-cancel";
+  return "";
+}
+function updateDashboard(items) {
+  let todayCount = 0, sum = 0, done = 0, total = items.length, unresolved = 0, cancelled = 0;
+  items.forEach(item => {
+    if (isTodayItem(item)) todayCount++;
+    sum += Number(String(item.income || "0").replace(/\D/g, "")) || 0;
+    if (isDoneStatus(item.status)) done++;
+    else if (isCancelledStatus(item.status)) cancelled++;
+    else unresolved++;
+  });
+  setText("dashToday", todayCount);
+  setText("dashSum", sum);
+  setText("dashDone", done);
+  setText("dashTotal", total);
+  setText("dashUnresolved", unresolved);
+  setText("dashCancelled", cancelled);
+}
+
 function renderApplications(items) {
   const x = tr();
 
@@ -1241,12 +1048,9 @@ function renderApplications(items) {
       <div class="applicationMain">
         <div>
           <div class="applicationName">👤 ${highlightMatch(item.fio || "-")}</div>
-<div>🆔 ИНН: <b>${highlightMatch(item.inn || "-")}</b></div>
+          <div>🆔 ИНН: <b>${highlightMatch(item.inn || "-")}</b></div>
         </div>
-
-        <div class="statusBadge ${getStatusClass(item.status)}">
-          ${escapeHtml(translateStatus(item.status))}
-        </div>
+        <div class="statusBadge ${getStatusClass(item.status)}">${escapeHtml(translateStatus(item.status))}</div>
       </div>
 
       <div class="appDetails">
@@ -1354,17 +1158,6 @@ function exportExcel() {
   URL.revokeObjectURL(link.href);
 }
 
-function getStatusClass(status) {
-  const s = String(status || "").toLowerCase().trim();
-
-  if (s === "новый") return "status-new";
-  if (s === "в процессе") return "status-process";
-  if (s === "решен" || s === "решён" || s === "ҳал шуд") return "status-done";
-  if (s === "отменен") return "status-cancel";
-
-  return "";
-}
-
 function exportPdf() {
   const x = tr();
   const rowsData = getCurrentFilteredApplications();
@@ -1384,7 +1177,7 @@ function exportPdf() {
 
   const printWindow = window.open("", "_blank");
   if (!printWindow) {
-    alert("Ð Ð°Ð·ÑÐµÑÐ¸ÑÐµ Ð²ÑÐ¿Ð»ÑÐ²Ð°ÑÑÐ¸Ðµ Ð¾ÐºÐ½Ð° Ð´Ð»Ñ ÑÐºÑÐ¿Ð¾ÑÑÐ° PDF");
+    alert("Разрешите всплывающие окна для экспорта PDF");
     return;
   }
 
@@ -1403,7 +1196,33 @@ function exportPdf() {
         td { padding: 7px; border: 1px solid #cbd5e1; vertical-align: top; }
         tr:nth-child(even) { background: #f8fafc; }
         .footer { margin-top: 20px; font-size: 11px; color: #6b7280; text-align: right; }
-        @media print {
+        
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(95px, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+.dashboardGrid .card {
+  text-align: center;
+  margin-top: 0;
+  padding: 10px 8px;
+  border-radius: 12px;
+  background: rgba(30,41,59,0.7);
+}
+.dashboardGrid b { font-size: 12px; color: #94a3b8; }
+.dashboardGrid span { display:block; margin-top:4px; font-size:18px; font-weight:700; }
+.dashCard { cursor:pointer; transition:0.2s; }
+.dashCard:hover { transform:translateY(-2px); background:#334155; }
+.dashCard.active { border:1px solid #22c55e; box-shadow:0 0 15px rgba(34,197,94,0.25); }
+.statusBadge { padding:6px 10px; border-radius:999px; font-size:12px; font-weight:700; display:inline-block; }
+.status-new { background:rgba(148,163,184,0.2); color:#cbd5f5; border:1px solid rgba(148,163,184,0.4); }
+.status-process { background:rgba(250,204,21,0.15); color:#fde047; border:1px solid rgba(250,204,21,0.4); }
+.status-done { background:rgba(34,197,94,0.15); color:#bbf7d0; border:1px solid rgba(34,197,94,0.4); }
+.status-cancel { background:rgba(239,68,68,0.15); color:#fecaca; border:1px solid rgba(239,68,68,0.4); }
+#updateBanner { position:fixed; left:12px; right:12px; bottom:12px; z-index:10000; background:#22c55e; color:#fff; padding:12px 14px; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.35); font-weight:700; text-align:center; }
+
+@media print {
           body { padding: 10px; }
           table { page-break-inside: auto; }
           tr { page-break-inside: avoid; page-break-after: auto; }
@@ -1416,9 +1235,9 @@ function exportPdf() {
       <table>
         <thead>
           <tr>
-            <th>â</th>
+            <th>№</th>
             <th>${escapeHtml(x.date)}</th>
-            <th>ÐÐÐ</th>
+            <th>ИНН</th>
             <th>${escapeHtml(x.fio)}</th>
             <th>${escapeHtml(x.income)}</th>
             <th>${escapeHtml(x.phone)}</th>
@@ -1428,7 +1247,7 @@ function exportPdf() {
         </thead>
         <tbody>${rows}</tbody>
       </table>
-      <div class="footer">UZA App â v1.3.0</div>
+      <div class="footer">UZA App — v1.4.0</div>
       <script>
         window.onload = function() { window.print(); };
       <\/script>
@@ -1437,6 +1256,50 @@ function exportPdf() {
   `);
   printWindow.document.close();
 }
+function getCurrentHtmlUrl() {
+  const url = new URL(window.location.href);
+  url.searchParams.set("cache", Date.now());
+  return url.toString();
+}
+function extractVersionFromHtml(html) {
+  const match = html.match(/const\s+APP_VERSION\s*=\s*["']([^"']+)["']/);
+  return match ? match[1] : null;
+}
+function checkProgramUpdate() {
+  fetch(getCurrentHtmlUrl(), { cache: "no-store" })
+    .then(r => r.text())
+    .then(html => {
+      const latestVersion = extractVersionFromHtml(html);
+      if (!latestVersion || latestVersion === APP_VERSION) return;
+      forceUpdateProgram(latestVersion);
+    })
+    .catch(() => {});
+}
+function forceUpdateProgram(newVersion) {
+  const triedKey = "updateTried_" + newVersion;
+  if (sessionStorage.getItem(triedKey)) {
+    showUpdateBanner(newVersion);
+    return;
+  }
+  sessionStorage.setItem(triedKey, "1");
+  const url = new URL(window.location.href);
+  url.searchParams.set("v", Date.now());
+  window.location.replace(url.toString());
+}
+function showUpdateBanner(newVersion) {
+  if (document.getElementById("updateBanner")) return;
+  const banner = document.createElement("div");
+  banner.id = "updateBanner";
+  banner.innerHTML = `🔄 Доступна новая версия ${escapeHtml(newVersion)}. Нажмите для обновления.`;
+  banner.onclick = () => {
+    const url = new URL(window.location.href);
+    url.searchParams.set("v", Date.now());
+    sessionStorage.clear();
+    window.location.href = url.toString();
+  };
+  document.body.appendChild(banner);
+}
+
 </script>
 </body>
 </html>
