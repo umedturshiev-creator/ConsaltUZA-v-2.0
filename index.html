@@ -791,7 +791,7 @@ function initApp() {
       setLang(btn.dataset.lang);
       if ($("adminPanel").style.display !== "none") {
         renderApplications(getCurrentFilteredApplications());
-        updateDashboard(getCurrentFilteredApplications());
+        updateDashboard(allApplications);
       }
     };
   });
@@ -1035,9 +1035,13 @@ function loadApplications() {
       }
 
       allApplications = d.items || [];
-      const filtered = getCurrentFilteredApplications();
-      updateDashboard(filtered);
-      renderApplications(filtered);
+const filtered = getCurrentFilteredApplications();
+
+// Дашборд считает все заявки
+updateDashboard(allApplications);
+
+// Список показывает только выбранный фильтр
+renderApplications(filtered);
       markActiveDashboardCard();
     })
     .catch(error => {
@@ -1073,8 +1077,11 @@ function getCurrentFilteredApplications() {
 
 function filterApplications() {
   const filtered = getCurrentFilteredApplications();
+
   renderApplications(filtered);
-  updateDashboard(filtered);
+
+  // Дашборд всегда считает ВСЕ заявки, а не выбранный фильтр
+  updateDashboard(allApplications);
 }
 
 function escapeRegExp(value) {
