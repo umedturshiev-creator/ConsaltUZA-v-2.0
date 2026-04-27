@@ -578,11 +578,12 @@ button:disabled {
 
     <div id="adminDashboard" class="dashboardGrid">
       <div class="card dashCard" onclick="setDashboardFilter('today')"><b id="dashTodayLabel">Сегодня</b><br><span id="dashToday">0</span></div>
-      <div class="card dashCard" onclick="setDashboardFilter('all')"><b id="dashTotalLabel">Всего</b><br><span id="dashTotal">0</span></div>
+      <div class="card dashCard" onclick="setDashboardFilter('new')"><b id="dashNewLabel">Новые</b><br><span id="dashNew">0</span></div>
       <div class="card dashCard" onclick="setDashboardFilter('done')"><b id="dashDoneLabel">Решено</b><br><span id="dashDone">0</span></div>
       <div class="card dashCard" onclick="setDashboardFilter('unresolved')"><b id="dashUnresolvedLabel">Нерешенные</b><br><span id="dashUnresolved">0</span></div>
       <div class="card dashCard" onclick="setDashboardFilter('cancelled')"><b id="dashCancelledLabel">Отмененные</b><br><span id="dashCancelled">0</span></div>
-      <div class="card dashCard" onclick="setDashboardFilter('all')"><b id="dashSumLabel">Сумма</b><br><span id="dashSum">0</span></div>
+      <div class="card dashCard" onclick="setDashboardFilter('all')"><b id="dashTotalLabel">Всего</b><br><span id="dashTotal">0</span></div>
+      
     </div>
 
     <input id="applicationSearch" placeholder="Поиск по ИНН / ФИО" oninput="filterApplications()">
@@ -659,7 +660,8 @@ const translations = {
     status_new: "Новый",
     status_process: "В процессе",
     status_done: "Решен",
-    status_cancel: "Отменен"
+    status_cancel: "Отменен",
+    dashboardNew: "Новые",
   },
   tj: {
     title: "📝 Портали дархостҳо",
@@ -710,7 +712,8 @@ const translations = {
     status_new: "Нав",
     status_process: "Дар раванди кор",
     status_done: "Ҳал шуд",
-    status_cancel: "Бекор шуд"
+    status_cancel: "Бекор шуд",
+    dashboardNew: "Нав",
   }
 };
 
@@ -759,6 +762,7 @@ function setLang(lang) {
   setText("dashTotalLabel", x.dashboardTotal);
   setText("dashUnresolvedLabel", x.dashboardUnresolved);
   setText("dashCancelledLabel", x.dashboardCancelled);
+  setText("dashNewLabel", x.dashboardNew);
   localStorage.setItem("lang", lang);
 }
 
@@ -1059,6 +1063,9 @@ function getCurrentFilteredApplications() {
     if (dashboardFilter === "unresolved") dashboardOk = isUnresolvedStatus(item.status);
     if (dashboardFilter === "cancelled") dashboardOk = isCancelledStatus(item.status);
     if (dashboardFilter === "all") dashboardOk = true;
+    if (dashboardFilter === "new") {
+  dashboardOk = normalizeStatus(item.status) === "новый";
+}
 
     return searchOk && dashboardOk;
   });
@@ -1096,7 +1103,7 @@ function isTodayItem(item) { const today = new Date().toLocaleDateString(); retu
 function setDashboardFilter(filter) { dashboardFilter = filter; filterApplications(); markActiveDashboardCard(); }
 function markActiveDashboardCard() {
   document.querySelectorAll(".dashCard").forEach(card => card.classList.remove("active"));
-  const activeMap = { today:"dashTodayLabel", all:"dashTotalLabel", done:"dashDoneLabel", unresolved:"dashUnresolvedLabel", cancelled:"dashCancelledLabel" };
+  const activeMap = { today:"dashTodayLabel", all:"dashTotalLabel", done:"dashDoneLabel", unresolved:"dashUnresolvedLabel", cancelled:"dashCancelledLabel", new: "dashNewLabel",};
   const label = document.getElementById(activeMap[dashboardFilter]);
   if (label && label.closest(".dashCard")) label.closest(".dashCard").classList.add("active");
 }
@@ -1117,8 +1124,14 @@ function getStatusClass(status) {
   return "";
 }
 function updateDashboard(items) {
-  let todayCount = 0, sum = 0, done = 0, total = items.length, unresolved = 0, cancelled = 0;
+  let todayCount = 0, done = 0, total = items.length, unresolved = 0, cancelled = 0; let newCount = 0;
   items.forEach(item => {
+    const status = String(item.status || "").toLowerCase().trim();
+
+if (status === "новый") {
+  newCount++;
+}
+    
     if (isTodayItem(item)) todayCount++;
     sum += Number(String(item.income || "0").replace(/\D/g, "")) || 0;
     if (isDoneStatus(item.status)) done++;
@@ -1126,11 +1139,11 @@ function updateDashboard(items) {
     else unresolved++;
   });
   setText("dashToday", todayCount);
-  setText("dashSum", sum);
   setText("dashDone", done);
   setText("dashTotal", total);
   setText("dashUnresolved", unresolved);
   setText("dashCancelled", cancelled);
+  $("dashNew").innerText = newCount;
 }
 
 function renderApplications(items) {
