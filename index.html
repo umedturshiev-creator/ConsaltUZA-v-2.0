@@ -607,7 +607,7 @@ button:disabled {
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxwGx9sX4iLciXETRlyOse1tD4nmMT-GE9hWRiBPK2H93bj_Bf0Glq-RU_TDUPpnW4A/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwWAQrFtMZTEkr0x3J7hM2WGa55VIb-lHQIJL9QuyscTTbKkqPxFjBQWVxFx_TMDaXZ/exec";
 const APP_VERSION = "1.4.1";
 
 const translations = {
@@ -1183,7 +1183,11 @@ function renderApplications(items) {
 
       <div class="appDetails">
         <div><small>${escapeHtml(x.date)}</small>📅 ${escapeHtml(item.date || "-")}</div>
-        <div><small>${escapeHtml(x.income)}</small>💰 ${escapeHtml(item.income || "-")}</div>
+       <div>
+  <small>${escapeHtml(x.income)}</small>
+  💰 ${escapeHtml(item.income || "-")}<br>
+  📅 ${escapeHtml(item.incomeMonth || "-")}
+</div>
        <div style="margin-top:8px;">
   📞 ${escapeHtml(item.phone || "-")}<br>
 
