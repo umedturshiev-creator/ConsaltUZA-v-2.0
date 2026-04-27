@@ -413,6 +413,59 @@ button:disabled {
   #adminPanel { display:block !important; }
   .card { background:#fff; color:#000; border:1px solid #ccc; box-shadow:none; }
 }
+
+/* MOBILE DASHBOARD FIX */
+@media (max-width: 700px) {
+  .dashboardGrid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 6px !important;
+    overflow: visible !important;
+  }
+
+  .dashboardGrid .card {
+    min-width: 0 !important;
+    padding: 8px 5px !important;
+    border-radius: 12px !important;
+    font-size: 11px !important;
+    margin-top: 0 !important;
+  }
+
+  .dashboardGrid b {
+    font-size: 10px !important;
+    line-height: 1.2 !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dashboardGrid span {
+    font-size: 17px !important;
+    margin-top: 4px !important;
+  }
+
+  .dashCard.active {
+    box-shadow: 0 0 8px rgba(34,197,94,0.35) !important;
+  }
+
+  .adminActions {
+    grid-template-columns: 1fr !important;
+  }
+
+  #applicationsList .card {
+    font-size: 14px !important;
+  }
+
+  .applicationName {
+    font-size: 16px !important;
+  }
+
+  .appDetails {
+    grid-template-columns: 1fr !important;
+    font-size: 13px !important;
+  }
+}
+  
 </style>
 </head>
 
